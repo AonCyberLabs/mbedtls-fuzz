@@ -7,8 +7,8 @@ readonly MBEDTLS_1_2="polarssl-1.2.15"
 main() {
     # sudo apt-get install build-essential automake wget
 
-    #wget https://tls.mbed.org/download/mbedtls-2.0.0-gpl.tgz
-    #wget https://tls.mbed.org/download/mbedtls-1.3.12-gpl.tgz
+    wget https://tls.mbed.org/download/mbedtls-2.0.0-gpl.tgz
+    wget https://tls.mbed.org/download/mbedtls-1.3.12-gpl.tgz
     #wget https://tls.mbed.org/download/polarssl-1.2.15-gpl.tgz
 
     tar xzf "$MBEDTLS_2_0"-gpl.tgz
