@@ -1,0 +1,40 @@
+diff --git a/library/ssl_cli.c b/library/ssl_cli.c
+index 1d683d3..ae4e742 100644
+--- a/library/ssl_cli.c
++++ b/library/ssl_cli.c
+@@ -490,7 +490,8 @@ static int ssl_generate_random( mbedtls_ssl_context *ssl )
+ #endif
+ 
+ #if defined(MBEDTLS_HAVE_TIME)
+-    t = time( NULL );
++    /*t = time( NULL );*/
++    t = 1;
+     *p++ = (unsigned char)( t >> 24 );
+     *p++ = (unsigned char)( t >> 16 );
+     *p++ = (unsigned char)( t >>  8 );
+diff --git a/library/ssl_srv.c b/library/ssl_srv.c
+index 701d27d..e270f0b 100644
+--- a/library/ssl_srv.c
++++ b/library/ssl_srv.c
+@@ -2153,7 +2153,8 @@ static int ssl_write_server_hello( mbedtls_ssl_context *ssl )
+                         buf[4], buf[5] ) );
+ 
+ #if defined(MBEDTLS_HAVE_TIME)
+-    t = time( NULL );
++    /*t = time( NULL );*/
++    t = 1;
+     *p++ = (unsigned char)( t >> 24 );
+     *p++ = (unsigned char)( t >> 16 );
+     *p++ = (unsigned char)( t >>  8 );
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1f556f3..985cb23 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -70,6 +70,7 @@ endif(ENABLE_ZLIB_SUPPORT)
+ 
+ add_subdirectory(library)
+ add_subdirectory(include)
++add_subdirectory(fuzz)
+ 
+ if(ENABLE_PROGRAMS)
+     add_subdirectory(programs)
