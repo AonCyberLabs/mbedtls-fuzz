@@ -4,7 +4,7 @@
 # find . -name 'id*' -type f | grep crashes | sort > crash_files.txt
 
 readonly GDB="gdb"
-readonly SELFTLS="mbedtls-1.3.??/fuzz/selftls"
+readonly SELFTLS="mbedtls-1.3.12/fuzz/selftls"
 readonly CRASH_FILES="./crash_files.txt"
 
 usage() {
