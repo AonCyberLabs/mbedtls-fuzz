@@ -3,6 +3,7 @@
 readonly MBEDTLS_2_0="mbedtls-2.0.0"
 readonly MBEDTLS_1_3="mbedtls-1.3.12"
 readonly MBEDTLS_1_2="polarssl-1.2.15"
+readonly NO_TIME=1
 
 main() {
     # sudo apt-get install build-essential automake wget
@@ -41,8 +42,19 @@ main() {
     cp selftls-2.0.c "${MBEDTLS_2_0}/fuzz/selftls.c"
     cp selftls-1.3.c "${MBEDTLS_1_3}/fuzz/selftls.c"
 
-    pushd "$MBEDTLS_2_0" && patch -p1 < ../"$MBEDTLS_2_0".patch && ./fuzz/compile.sh
-    popd && pushd "$MBEDTLS_1_3" && patch -p1 < ../"$MBEDTLS_1_3".patch && ./fuzz/compile.sh
+    pushd "$MBEDTLS_2_0" && patch -p1 < ../CMakeLists-2.0.patch
+    popd && pushd "$MBEDTLS_1_3" && patch -p1 < ../CMakeLists-1.3.patch && popd
+
+    if [[ "$NO_TIME" = "1" ]]; then
+        cp config-1.3.h "${MBEDTLS_1_3}/include/polarssl/config.h"
+        cp config-2.0.h "${MBEDTLS_2_0}/include/mbedtls/config.h"
+    else
+        pushd "$MBEDTLS_2_0" && patch -p1 < ../time-2.0.patch
+        popd && pushd "$MBEDTLS_1_3" && patch -p1 < ../time-1.3.patch && popd
+    fi
+
+    pushd "$MBEDTLS_2_0" && ./fuzz/compile.sh
+    popd && pushd "$MBEDTLS_1_3" && ./fuzz/compile.sh
 }
 
 main "$@"

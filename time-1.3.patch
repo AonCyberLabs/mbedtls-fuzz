@@ -1,5 +1,3 @@
-diff --git a/library/ssl_cli.c b/library/ssl_cli.c
-index 0c62c34..b1d5c3a 100644
 --- a/library/ssl_cli.c
 +++ b/library/ssl_cli.c
 @@ -551,7 +551,8 @@ static int ssl_write_client_hello( ssl_context *ssl )
@@ -12,8 +10,6 @@ index 0c62c34..b1d5c3a 100644
      *p++ = (unsigned char)( t >> 24 );
      *p++ = (unsigned char)( t >> 16 );
      *p++ = (unsigned char)( t >>  8 );
-diff --git a/library/ssl_srv.c b/library/ssl_srv.c
-index fc21754..d01332f 100644
 --- a/library/ssl_srv.c
 +++ b/library/ssl_srv.c
 @@ -2099,7 +2099,8 @@ static int ssl_write_server_hello( ssl_context *ssl )
@@ -26,15 +22,3 @@ index fc21754..d01332f 100644
      *p++ = (unsigned char)( t >> 24 );
      *p++ = (unsigned char)( t >> 16 );
      *p++ = (unsigned char)( t >>  8 );
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index bd0367d..b22a47f 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -73,6 +73,7 @@ endif(ENABLE_ZLIB_SUPPORT)
- 
- add_subdirectory(library)
- add_subdirectory(include)
-+add_subdirectory(fuzz)
- 
- if(ENABLE_TESTING)
-   if(CMAKE_COMPILER_IS_GNUCC)

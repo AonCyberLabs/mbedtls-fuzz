@@ -1,0 +1,10 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -73,6 +73,7 @@ endif(ENABLE_ZLIB_SUPPORT)
+ 
+ add_subdirectory(library)
+ add_subdirectory(include)
++add_subdirectory(fuzz)
+ 
+ if(ENABLE_TESTING)
+   if(CMAKE_COMPILER_IS_GNUCC)
