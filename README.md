@@ -7,6 +7,8 @@ An integral part of this project is the code for a self-communicating instance (
 
 More information about the project is available on the Gotham Digital Science blog: 
 
+[Fuzzing the mbed TLS Library](http://blog.gdssecurity.com/labs/2015/9/21/fuzzing-the-mbed-tls-library.html)
+
 ## Installation
 
 Grab the latest version of afl from the [afl homepage](http://lcamtuf.coredump.cx/afl/) and compile it.
