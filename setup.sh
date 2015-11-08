@@ -8,9 +8,9 @@ readonly NO_TIME=1
 main() {
     # sudo apt-get install build-essential automake wget
 
-    wget https://tls.mbed.org/download/mbedtls-2.0.0-gpl.tgz
-    wget https://tls.mbed.org/download/mbedtls-1.3.12-gpl.tgz
-    #wget https://tls.mbed.org/download/polarssl-1.2.15-gpl.tgz
+    wget -nc https://tls.mbed.org/download/mbedtls-2.0.0-gpl.tgz
+    wget -nc https://tls.mbed.org/download/mbedtls-1.3.12-gpl.tgz
+    #wget -nc https://tls.mbed.org/download/polarssl-1.2.15-gpl.tgz
 
     tar xzf "$MBEDTLS_2_0"-gpl.tgz
     tar xzf "$MBEDTLS_1_3"-gpl.tgz
@@ -53,8 +53,8 @@ main() {
         popd && pushd "$MBEDTLS_1_3" && patch -p1 < ../time-1.3.patch && popd
     fi
 
-    pushd "$MBEDTLS_2_0" && ./fuzz/compile.sh
-    popd && pushd "$MBEDTLS_1_3" && ./fuzz/compile.sh
+    pushd "${MBEDTLS_2_0}/fuzz" && ./compile.sh
+    popd && pushd "${MBEDTLS_1_3}/fuzz" && ./compile.sh
 }
 
 main "$@"
