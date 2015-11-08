@@ -759,8 +759,7 @@ int main( int argc, const char *argv[] )
                 if(  ret != POLARSSL_ERR_NET_WANT_READ && ret != POLARSSL_ERR_NET_WANT_WRITE )
                 {
                     printf( " failed\n  ! ssl_handshake returned -0x%x\n\n", -ret );
-                    /*goto exit;*/
-                    break;
+                    goto exit;
                 }
             }
         }
@@ -787,8 +786,7 @@ int main( int argc, const char *argv[] )
                 if(  ret != POLARSSL_ERR_NET_WANT_READ && ret != POLARSSL_ERR_NET_WANT_WRITE )
                 {
                     printf( " failed\n  ! ssl_handshake returned %d\n\n", ret );
-                    /*goto exit;*/
-                    break;
+                    goto exit;
                 }
             }
         }
