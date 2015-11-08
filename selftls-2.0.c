@@ -777,7 +777,7 @@ int main( int argc, const char *argv[] )
                 if(  ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE )
                 {
                     mbedtls_printf( " failed\n  ! mbedtls_ssl_handshake returned -0x%x\n\n", -ret );
-                    break;
+                    goto exit;
                 }
             }
         }
@@ -803,7 +803,7 @@ int main( int argc, const char *argv[] )
                 if(  ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE )
                 {
                     mbedtls_printf( " failed\n  ! mbedtls_ssl_handshake returned %d\n\n", ret );
-                    break;
+                    goto exit;
                 }
             }
         }
