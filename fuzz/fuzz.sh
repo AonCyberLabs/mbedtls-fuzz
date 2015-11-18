@@ -22,12 +22,17 @@ usage() {
 
 	cat <<- EOF
 	Usage: $progname [packet number] [fuzzer number]
-
+	
 	This program fuzzes mbed TLS using afl-fuzz.
 	Calling this program without arguments writes the network packets to files.
 	A specific network packet can be replaced with the content from a file which allows for fuzzing that packet.
 	To fuzz a specific packet, provide the packet number and the fuzzer number as command-line arguments.
 	The master fuzzer has number 1, while slaves can have any other number.
+	
+	mbedtls-fuzz v2.0
+	Fabian Foerg <ffoerg@gdssecurity.com>
+	https://blog.gdssecurity.com/labs/2015/9/21/fuzzing-the-mbed-tls-library.html
+	Copyright 2015 Gotham Digital Science
 	EOF
 }
 
