@@ -68,11 +68,6 @@
 #include "polarssl/ssl_cache.h"
 #endif
 
-#define HTTP_RESPONSE \
-    "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" \
-    "<h2>mbed TLS Test Server</h2>\r\n" \
-    "<p>Successful connection using: %s</p>\r\n"
-
 #define DEBUG_LEVEL 0
 
 #if !defined(POLARSSL_BIGNUM_C) || !defined(POLARSSL_CERTS_C) ||    \
@@ -184,7 +179,7 @@ static int net_would_block( int fd )
 #define HTTP_RESPONSE \
     "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" \
     "<h2>mbed TLS Test Server</h2>\r\n" \
-    "<p>Successful connection using: %s</p>\r\n"
+    "<p>Successful connection!</p>\r\n"
 
 #define MAX_HANDSHAKE_STEPS (sizeof(client_steps)/sizeof(client_steps[0]))
 
@@ -842,7 +837,7 @@ int main( int argc, const char *argv[] )
         fflush( stdout );
     }
 
-    len = sprintf( (char *) buf, GET_REQUEST );
+    len = snprintf( (char *) buf, sizeof( buf ), GET_REQUEST );
 
     while( ( ret = ssl_write( &c_ssl, buf, len ) ) <= 0 )
     {
@@ -919,8 +914,7 @@ int main( int argc, const char *argv[] )
         fflush( stdout );
     }
 
-    len = sprintf( (char *) buf, HTTP_RESPONSE,
-            ssl_get_ciphersuite( &s_ssl ) );
+    len = snprintf( (char *) buf, sizeof( buf ), HTTP_RESPONSE );
 
     while( ( ret = ssl_write( &s_ssl, buf, len ) ) <= 0 )
     {
