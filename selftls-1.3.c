@@ -467,6 +467,15 @@ int main( int argc, const char *argv[] )
     /* Handshake step counter */
     size_t step = 1;
     int flags;
+    /*
+     * The following number of steps are hardcoded to ensure
+     * that the client and server complete the handshake without
+     * waiting infinitely for the other side to send data.
+     *
+     *                     1  2  3  4  5  6  7  8  9
+     */
+    int client_steps[] = { 2, 1, 1, 1, 4, 2, 1, 1, 3 };
+    int server_steps[] = { 3, 1, 1, 3, 2, 1, 2, 1, 2 };
 
     ssl_context s_ssl, c_ssl;
     x509_crt srvcert;
@@ -723,16 +732,6 @@ int main( int argc, const char *argv[] )
         printf( "  . Performing the SSL/TLS handshake...\n" );
         fflush( stdout );
     }
-
-    /*
-     * The following number of steps are hardcoded to ensure
-     * that the client and server complete the handshake without
-     * waiting infinitely for the other side to send data.
-     *
-     *                     1  2  3  4  5  6  7  8  9
-     */
-    int client_steps[] = { 2, 1, 1, 1, 4, 2, 1, 1, 3 };
-    int server_steps[] = { 3, 1, 1, 3, 2, 1, 2, 1, 2 };
 
     do {
         /*

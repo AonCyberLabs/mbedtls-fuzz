@@ -1,60 +1,63 @@
 #!/bin/bash
 
-readonly MBEDTLS_2_0="mbedtls-2.0.0"
-readonly MBEDTLS_1_3="mbedtls-1.3.12"
-readonly MBEDTLS_1_2="polarssl-1.2.15"
+readonly ARCHIVE_SUFFIX='-gpl.tgz'
+readonly MBEDTLS_2_3='mbedtls-2.3.0'
+readonly SHA_256_2_3='21237014f779bde70b2d71399cc1ea53365eb7f10cdd74a13ee6329a1910cb49'
+readonly MBEDTLS_2_1='mbedtls-2.1.5'
+readonly SHA_256_2_1='119ff3ee2788a2c5f0604b247bdffd401c439c8e551561cbb4b1f9d3a21a120d'
+readonly MBEDTLS_1_3='mbedtls-1.3.17'
+readonly SHA_256_1_3='f5beb43e850283915e3e0f8d37495eade3bfb5beedfb61e7b8da70d4c68edb82'
+readonly MBEDTLS_A=( "$MBEDTLS_2_3" "$MBEDTLS_2_1" "$MBEDTLS_1_3" )
+readonly SHA_256_A=( "$SHA_256_2_3" "$SHA_256_2_1" "$SHA_256_1_3" )
 readonly NO_TIME=1
 
 main() {
-    # sudo apt-get install build-essential automake wget
+    # sudo apt-get install build-essential automake cmake wget
 
-    wget -nc https://tls.mbed.org/download/mbedtls-2.0.0-gpl.tgz
-    wget -nc https://tls.mbed.org/download/mbedtls-1.3.12-gpl.tgz
-    #wget -nc https://tls.mbed.org/download/polarssl-1.2.15-gpl.tgz
+    echo -e "  ************\n  Please make sure to update the constants of scripts in the 'fuzz' folder!\n  ************\n"
 
-    tar xzf "$MBEDTLS_2_0"-gpl.tgz
-    tar xzf "$MBEDTLS_1_3"-gpl.tgz
-    #tar xzf "$MBEDTLS_1_2"-gpl.tgz
+    for i in "${!MBEDTLS_A[@]}"; do
+        # download if necessary
+        wget -nc https://tls.mbed.org/download/"${MBEDTLS_A[$i]}${ARCHIVE_SUFFIX}"
 
-    # validate the checksum of the code archives
-    local CHECKSUM_2_0=$(shasum "${MBEDTLS_2_0}-gpl.tgz")
-    local CHECKSUM_1_3=$(shasum "${MBEDTLS_1_3}-gpl.tgz")
-    #local CHECKSUM_1_2=$(shasum "${MBEDTLS_1_2}-gpl.tgz")
+        # validate the checksum of the code archives
+        CHECKSUM=$(shasum -a 256 "${MBEDTLS_A[$i]}${ARCHIVE_SUFFIX}")
 
-    if [ "$CHECKSUM_2_0" != "a456be169003b4644931a90613fdaa0429af06a7  mbedtls-2.0.0-gpl.tgz" ]; then
-        echo "Error: 2.0 checksum check failed!"
-        exit 1
-    fi
+        if [[ "$CHECKSUM" != "${SHA_256_A[$i]}  ${MBEDTLS_A[$i]}${ARCHIVE_SUFFIX}" ]]; then
+            echo "Error: ${MBEDTLS_A[$i]}${ARCHIVE_SUFFIX} checksum check failed!"
+            exit 1
+        fi
 
-    if [ "$CHECKSUM_1_3" != "8d47de89f3e9cd54c099a9ecea32321a9b81ad66  mbedtls-1.3.12-gpl.tgz" ]; then
-        echo "Error: 1.3 checksum check failed!"
-        exit 1
-    fi
+        # extract archives
+        tar xzf "${MBEDTLS_A[$i]}${ARCHIVE_SUFFIX}"
 
-    #if [ "$CHECKSUM_1_2" != "b1da505ce79637a49e29d12a6beb2c1f74d84a72  polarssl-1.2.15-gpl.tgz" ]; then
-        #echo "Error: 1.2 checksum check failed!"
-        #exit 1
-    #fi
+        VERSION='2'
+        INCLUDE_DIR='mbedtls'
 
-    cp -R fuzz "${MBEDTLS_2_0}"
-    cp -R fuzz "${MBEDTLS_1_3}"
+        if [[ "${MBEDTLS_A[$i]}" = "$MBEDTLS_1_3" ]]; then
+            VERSION='1.3'
+            INCLUDE_DIR='polarssl'
+        fi
 
-    cp selftls-2.0.c "${MBEDTLS_2_0}/fuzz/selftls.c"
-    cp selftls-1.3.c "${MBEDTLS_1_3}/fuzz/selftls.c"
+        # copy fuzzing code and configuration
+        cp -R fuzz "${MBEDTLS_A[$i]}"
+        cp "selftls-${VERSION}.c" "${MBEDTLS_A[$i]}/fuzz/selftls.c"
 
-    pushd "$MBEDTLS_2_0" && patch -p1 < ../CMakeLists-2.0.patch
-    popd && pushd "$MBEDTLS_1_3" && patch -p1 < ../CMakeLists-1.3.patch && popd
+        # patch CMakeLists
+        pushd "${MBEDTLS_A[$i]}" && patch -p1 < "../CMakeLists-${VERSION}.patch"; popd
 
-    if [[ "$NO_TIME" = "1" ]]; then
-        cp config-1.3.h "${MBEDTLS_1_3}/include/polarssl/config.h"
-        cp config-2.0.h "${MBEDTLS_2_0}/include/mbedtls/config.h"
-    else
-        pushd "$MBEDTLS_2_0" && patch -p1 < ../time-2.0.patch
-        popd && pushd "$MBEDTLS_1_3" && patch -p1 < ../time-1.3.patch && popd
-    fi
+        # make sure TLS time field is constant
+        if [[ "$NO_TIME" = "1" ]]; then
+            cp "config-${VERSION}.h" "${MBEDTLS_A[$i]}/include/${INCLUDE_DIR}/config.h"
+        else
+            pushd "${MBEDTLS_A[$i]}" && patch -p1 < "../time-${VERSION}.patch"; popd
+        fi
 
-    pushd "${MBEDTLS_2_0}/fuzz" && ./compile.sh
-    popd && pushd "${MBEDTLS_1_3}/fuzz" && ./compile.sh
+        # compile the code
+        pushd "${MBEDTLS_A[$i]}/fuzz" && ./compile.sh; popd
+    done
+
+    echo -e "\n  ************\n  If everything compiled correctly, go into one of the 'mbedtls-2.?.?/fuzz/' folders and run './fuzz.sh'\n  ************"
 }
 
 main "$@"
